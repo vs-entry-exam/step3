@@ -1,0 +1,18 @@
+# colcon build artifacts
+build/
+install/
+log/
+# colcon mixins
+colcon.pkg
+
+# ROS 2 generated files
+*.pyc
+__pycache__/
+
+# IDE settings
+.vscode/
+.idea/
+.pytest_cache/
+
+# Misc
+.DS_Store
