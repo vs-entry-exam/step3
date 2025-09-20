@@ -10,7 +10,7 @@ ROS2에서 수집한 센서/SLAM 데이터를 웹·언리얼 환경에서 **실�
 
 ### Flow Chart
 
-
+<img width="441" height="411" alt="step3 drawio" src="https://github.com/user-attachments/assets/c142734d-facc-47b1-a3cf-0b1366612dc1" />
 
 <img width="2560" height="1440" alt="step3" src="https://github.com/user-attachments/assets/dc0c07c2-bca1-4067-88ee-adc443aa75f7" />
 
