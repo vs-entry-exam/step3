@@ -12,9 +12,14 @@ ROS2에서 수집한 센서/SLAM 데이터를 웹·언리얼 환경에서 **실�
 
 
 
+<img width="2560" height="1440" alt="step3" src="https://github.com/user-attachments/assets/dc0c07c2-bca1-4067-88ee-adc443aa75f7" />
+
+![step3](https://github.com/user-attachments/assets/a52afe7a-57a2-4c84-b023-4081d939cb57)
+
 
 
 ### Prerequisites
+
 
 * OS: Ubuntu 22.04
 * ROS 2 Humble 
