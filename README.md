@@ -1,83 +1,51 @@
-# Step 3 – Sensor & Mapping Visualization
+# Step 3: AGV 3D 맵핑 및 환경 인식
 
-### Project Goal
+## 1. 프로젝트 개요
 
-ROS2에서 수집한 센서/SLAM 데이터를 웹·언리얼 환경에서 **실시간으로 시각화**한다.
-포인트 클라우드 → **복셀화/OctoMap/Occupancy Grid** 변환 파이프라인을 구성하고, 경량 뷰어로 **지도 생성 진행상황(Incremental Mapping)** 을 확인할 수 있게 만든다.
-최종적으로 “다이어그램 + 처리과정 문서 + 실행 가능한 데모 페이지(코드/시연)”를 제공한다.
+ROS2와 Gazebo 환경에서 AGV에 탑재된 3D LiDAR 센서 데이터를 활용하여 실시간 3D 맵을 생성합니다. `OctoMap`을 이용한 3D 점유 격자 지도 생성을 통해 로봇의 3D 환경 인식 능력을 구현합니다.
 
+## 2. 목표
 
+- **Gazebo**: 3D LiDAR를 활용하여 시뮬레이션 내의 환경을 스캔합니다.
+- **3D Mapping**: `OctoMap`을 활용하여 실시간으로 3D 점유 격자 지도를 생성하고 RViz에서 시각화합니다.
+- **시각화 파이프라인**: 센서 데이터가 3D 지도로 변환되는 과정을 시각적으로 확인 가능한 파이프라인을 구축합니다.
 
-### Flow Chart
+## 3. 결과물 (Artifacts)
 
-<img width="441" height="411" alt="step3 drawio" src="https://github.com/user-attachments/assets/c142734d-facc-47b1-a3cf-0b1366612dc1" />
+### 시스템 구성도
 
-<img width="2560" height="1440" alt="step3" src="https://github.com/user-attachments/assets/dc0c07c2-bca1-4067-88ee-adc443aa75f7" />
+![시스템 구성도](https://github.com/user-attachments/assets/c142734d-facc-47b1-a3cf-0b1366612dc1)
 
-![step3](https://github.com/user-attachments/assets/a52afe7a-57a2-4c84-b023-4081d939cb57)
+### 실행 화면
 
+![3D 맵핑 실행 화면 1](https://github.com/user-attachments/assets/dc0c07c2-bca1-4067-88ee-adc443aa75f7)
 
+## 4. 핵심 패키지
 
-### Prerequisites
+- `agv_pro_gazebo`: 3D LiDAR가 장착된 AGV 모델과 시뮬레이션 환경을 로드합니다.
+- `libgazebo_ros_ray_sensor`: 3D LiDAR가 시뮬레이션 환경을 스캔하고 포인트 클라우드를 발행합니다.
+- `octomap_server`: `libgazebo_ros_ray_sensor`로부터 생성된 포인트 클라우드 데이터를 입력받아 OctoMap을 생성합니다.
 
+## 5. 실행 방법
 
-* OS: Ubuntu 22.04
-* ROS 2 Humble 
-* Gazebo, Octomap
-
-
-### Dependencies
-
-* Internal (this repo)
-
-  * `agv_pro_ros2/agv_pro_description`
-  * `agv_pro_ros2/agv_pro_bringup`
-  * `agv_pro_ros2/agv_pro_gazebo`
-  * `agv_pro_ros2/agv_pro_base`
-  * `agv_pro_ros2/Lslidar_ROS2_driver/lslidar_driver`
-  * `agv_pro_ros2/Lslidar_ROS2_driver/lslidar_msgs`
-  * [octomap_mapping](https://github.com/OctoMap/octomap_mapping/tree/ros2)
-
-* External
-
-  * `ros-humble-octomap-ros`
-  * `ros-humble-octomap-rviz-plugins`
-
-
-
-### Build
+### Gazebo 실행 및 OctoMap 생성
 
 ```bash
-# workspace
-cd ~/step3
-source /opt/ros/humble/setup.bash
-rosdep update
-rosdep install --from-paths src --ignore-src -r -y
-
-# build (packages of this step)
-colcon build --symlink-install \
-  --packages-select agv_pro_description agv_pro_bringup agv_pro_gazebo agv_pro_base lslidar_driver lslidar_msgs
-
-# octomap (ros2 branch) built from source 시
-colcon build --symlink-install \
-  --packages-select octomap_server octomap_mapping \
-
-source install/setup.bash
-```
-
-
-
-### How to Run
-
-#### Launch Gazebo + Spawn robot + Octomap
-
-```bash
+# 워크스페이스 환경 설정
+source ~/step3/install/setup.bash
+# Gazebo와 OctoMap을 함께 실행하는 통합 런치 파일 실행
 ros2 launch agv_pro_gazebo agv_pro_gazebo.launch.py 
 ```
+> 실행 후 RViz에서 `OccpancyGrid`와 `octomap_binary` / `octomap_binary` 토픽을 추가하여 3D 맵과 OctoMap이 생성되는 과정을 확인할 수 있습니다.
 
+## 6. 자체 평가 및 개선 방향
 
-### Project Limitations
+### 미비한 점
 
-* **No SLAM / No Loop Closure:** Octomap에 국한됨.
-* **성능 제약:** 저사양 GPU/CPU에서 포인트/업데이트 레이트를 낮춰야 안정적.
-* **센서 모델 단순화:** 시뮬 LiDAR는 실제 하드웨어보다 잡음/반사 모델이 단순.
+- **맵 활용의 한계**: 생성된 3D 지도(OctoMap)가 시각화에만 사용되고, 자율 주행의 충돌 회피에는 직접적으로 연동되지 않았습니다.
+- **성능 문제**: 대규모 환경에서 3D 맵을 실시간으로 처리할 때 계산 부하가 커져 성능 저하가 발생할 수 있습니다.
+
+### 개선 방향
+
+- **3D 충돌 회피 적용**: 생성된 OctoMap을 Nav2의 Costmap 레이어 플러그인으로 통합하여, 2D 지도에 없는 3D 장애물(예: 공중에 매달린 장애물)을 회피하는 3D 네비게이션을 구현합니다.
+- **성능 최적화**: RTAB-Map의 파라미터(특징점 검출, 루프 클로저 등)와 OctoMap의 해상도를 조절하여 실시간성과 맵의 정밀도 사이의 균형을 최적화합니다.
